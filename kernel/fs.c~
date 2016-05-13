@@ -447,17 +447,23 @@ readi(struct inode *ip, char *dst, uint off, uint n)
   	  n = ip->size - off;
 
   	for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
-  	  uint sector_number = bmap(ip, off/BSIZE);
-  	  if(sector_number == 0){ //failed to find block
-  	    panic("readi: trying to read a block that was never allocated");
-  	  }
+		if(n > ip->size)
+			return -1;
+  	 // uint sector_number = bmap(ip, off/52);
+  	 // if(sector_number == 0){ //failed to find block
+  	   // panic("readi: trying to read a block that was never allocated");
+  	 // }
     
-   	bp = bread(ip->dev, sector_number);
-    	m = min(n - tot, BSIZE - off%BSIZE);
-    	memmove(dst, bp->data + off%BSIZE, m);
-    	brelse(bp);
+   	//bp = bread(ip->dev, sector_number);
+    	m = min(n - tot, 52 - off%52);
+    	memmove(dst, ip->addrs + off%52, m);
+	cprintf("addr here: %d\n", ip->addrs + off%52);
+    	//brelse(bp);
   	}
+  //iupdate(ip);
   }
+
+  
 
   return n;
 }
@@ -517,18 +523,26 @@ writei(struct inode *ip, char *src, uint off, uint n)
   	    
 
   	for(tot=0; tot<n; tot+=m, off+=m, src+=m){
-  	  uint sector_number = bmap(ip, off/BSIZE); //should pretty much be zero for all small files
+	  if(off > 52){
+		return -1; //can't write anymore
+	  }
+  	  //uint sector_number = bmap(ip, off/52); //should pretty much be zero for all small files
   	  //if(sector_number == 0){ //failed to find block
   	    //n = tot; //return number of bytes written so far
   	    //break;
   	  //}
           
-  	  bp = bread(ip->dev, sector_number);
+  	  //bp = bread(ip->dev, sector_number);
 	  //n-tot is the remainder of bits left over from the write (only nonzero if couldn't write all bytes)
-  	  m = min(n - tot, BSIZE - off%BSIZE);
-  	  memmove(ip->addrs + off%BSIZE, src, m); //memory is written here
-  	  bwrite(bp);
-  	  brelse(bp);
+  	  m = min(n - tot, 52 - off%52);
+	  if(off + m > 52)
+		m = 52 - off;
+	
+  	  memmove(ip->addrs + off%52, src, m); //memory is written here
+	  cprintf("addr here: %d\n", ip->addrs + off%52);
+	  //*(ip->addrs + off%BSIZE) = src;
+  	  //bwrite(bp);
+  	  //brelse(bp);
   	}
   }
   
@@ -538,6 +552,7 @@ writei(struct inode *ip, char *src, uint off, uint n)
     ip->size = off;
     iupdate(ip); //critical! if inode has changed. do this.
   }
+  //cprintf("ip size = %d\n", off);
   return n;
 }
 

@@ -8,7 +8,25 @@ build xv6 using make
 **********************************************************************
 Trying to build project using make
 make
-make: Nothing to be done for `all'.
+gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
+		-M -MG kernel/fs.c -MF kernel/fs.d -MT kernel/fs.d -MT kernel/fs.o
+gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o kernel/fs.o kernel/fs.c
+ld  -m    elf_i386 -nostdlib --omagic \
+		--section-start=.text=0x100000 --entry=main --output=kernel/kernel \
+		kernel/multiboot.o kernel/data.o kernel/bio.o kernel/console.o kernel/exec.o kernel/file.o kernel/fs.o kernel/ide.o kernel/ioapic.o kernel/kalloc.o kernel/kbd.o kernel/lapic.o kernel/main.o kernel/mp.o kernel/picirq.o kernel/pipe.o kernel/proc.o kernel/spinlock.o kernel/string.o kernel/swtch.o kernel/syscall.o kernel/sysfile.o kernel/sysproc.o kernel/timer.o kernel/trapasm.o kernel/trap.o kernel/uart.o kernel/vectors.o kernel/vm.o \
+		-b binary initcode bootother
+dd if=/dev/zero of=xv6.img count=10000
+10000+0 records in
+10000+0 records out
+5120000 bytes (5.1 MB) copied, 0.0120638 s, 424 MB/s
+dd if=kernel/bootblock of=xv6.img conv=notrunc
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 7.6629e-05 s, 6.7 MB/s
+dd if=kernel/kernel of=xv6.img seek=1 conv=notrunc
+253+1 records in
+253+1 records out
+129736 bytes (130 kB) copied, 0.000259671 s, 500 MB/s
 
 
 test build PASSED
@@ -35,13 +53,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -52,7 +74,8 @@ cat
 rm
 zombie
 wc
-balloc: first 487 blocks have been allocated
+write2
+balloc: first 600 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -65,7 +88,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-$ 
+
 
 test create PASSED (10 of 10)
  (Creates a small file and makes sure the type is properly set.)
@@ -91,13 +114,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -108,7 +135,8 @@ cat
 rm
 zombie
 wc
-balloc: first 487 blocks have been allocated
+write2
+balloc: first 600 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -147,13 +175,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -164,7 +196,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -203,13 +236,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -220,7 +257,8 @@ cat
 rm
 zombie
 wc
-balloc: first 488 blocks have been allocated
+write2
+balloc: first 601 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -235,7 +273,7 @@ tester
 bytes written = 25
 bytes read = 25
 TEST PASSED
-$ 
+
 
 test read PASSED (10 of 10)
  (Tries to read more than possible and makes sure only amount available is read.)
@@ -261,13 +299,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -278,7 +320,8 @@ cat
 rm
 zombie
 wc
-balloc: first 488 blocks have been allocated
+write2
+balloc: first 601 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -319,13 +362,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -336,7 +383,8 @@ cat
 rm
 zombie
 wc
-balloc: first 488 blocks have been allocated
+write2
+balloc: first 601 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -351,7 +399,6 @@ tester
 bytes written = 52
 bytes read = 52
 TEST PASSED
-
 
 test write PASSED (10 of 10)
  (Tries to write more than possible to a small file and makes sure only 52 bytes are written.)
@@ -377,13 +424,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -394,7 +445,8 @@ cat
 rm
 zombie
 wc
-balloc: first 488 blocks have been allocated
+write2
+balloc: first 601 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -435,13 +487,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -452,7 +508,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -466,7 +523,7 @@ $ tester
 tester
 Data mismatch.
 TEST FAILED
-
+$ 
 
 test write3 FAILED (0 of 10)
  (Repeatedly opens, writes to the end, closes a small file until file is full.)
@@ -493,13 +550,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -510,7 +571,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -524,7 +586,7 @@ $ tester
 tester
 Data mismatch.
 TEST FAILED
-
+$ 
 
 test write4 FAILED (0 of 10)
  (Small write followed by a big write to a small file should truncate the big write upto max small file size.)
@@ -551,13 +613,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -568,7 +634,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -607,13 +674,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -624,7 +695,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -663,13 +735,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -680,7 +756,8 @@ cat
 rm
 zombie
 wc
-balloc: first 488 blocks have been allocated
+write2
+balloc: first 601 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -693,7 +770,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-$ 
+
 
 test remove PASSED (10 of 10)
  (Makes sure removing a small file does not corrupt the file system by freeing blocks.)
@@ -719,13 +796,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -736,7 +817,8 @@ cat
 rm
 zombie
 wc
-balloc: first 488 blocks have been allocated
+write2
+balloc: first 601 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -781,13 +863,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -798,7 +884,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -811,13 +898,1010 @@ init: starting sh
 $ tester
 tester
 iteration 0
-Data mismatch.
-TEST FAILED
+iteration 1
+iteration 2
+iteration 3
+iteration 4
+iteration 5
+iteration 6
+iteration 7
+iteration 8
+iteration 9
+iteration 10
+iteration 11
+iteration 12
+iteration 13
+iteration 14
+iteration 15
+iteration 16
+iteration 17
+iteration 18
+iteration 19
+iteration 20
+iteration 21
+iteration 22
+iteration 23
+iteration 24
+iteration 25
+iteration 26
+iteration 27
+iteration 28
+iteration 29
+iteration 30
+iteration 31
+iteration 32
+iteration 33
+iteration 34
+iteration 35
+iteration 36
+iteration 37
+iteration 38
+iteration 39
+iteration 40
+iteration 41
+iteration 42
+iteration 43
+iteration 44
+iteration 45
+iteration 46
+iteration 47
+iteration 48
+iteration 49
+iteration 50
+iteration 51
+iteration 52
+iteration 53
+iteration 54
+iteration 55
+iteration 56
+iteration 57
+iteration 58
+iteration 59
+iteration 60
+iteration 61
+iteration 62
+iteration 63
+iteration 64
+iteration 65
+iteration 66
+iteration 67
+iteration 68
+iteration 69
+iteration 70
+iteration 71
+iteration 72
+iteration 73
+iteration 74
+iteration 75
+iteration 76
+iteration 77
+iteration 78
+iteration 79
+iteration 80
+iteration 81
+iteration 82
+iteration 83
+iteration 84
+iteration 85
+iteration 86
+iteration 87
+iteration 88
+iteration 89
+iteration 90
+iteration 91
+iteration 92
+iteration 93
+iteration 94
+iteration 95
+iteration 96
+iteration 97
+iteration 98
+iteration 99
+iteration 100
+iteration 101
+iteration 102
+iteration 103
+iteration 104
+iteration 105
+iteration 106
+iteration 107
+iteration 108
+iteration 109
+iteration 110
+iteration 111
+iteration 112
+iteration 113
+iteration 114
+iteration 115
+iteration 116
+iteration 117
+iteration 118
+iteration 119
+iteration 120
+iteration 121
+iteration 122
+iteration 123
+iteration 124
+iteration 125
+iteration 126
+iteration 127
+iteration 128
+iteration 129
+iteration 130
+iteration 131
+iteration 132
+iteration 133
+iteration 134
+iteration 135
+iteration 136
+iteration 137
+iteration 138
+iteration 139
+iteration 140
+iteration 141
+iteration 142
+iteration 143
+iteration 144
+iteration 145
+iteration 146
+iteration 147
+iteration 148
+iteration 149
+iteration 150
+iteration 151
+iteration 152
+iteration 153
+iteration 154
+iteration 155
+iteration 156
+iteration 157
+iteration 158
+iteration 159
+iteration 160
+iteration 161
+iteration 162
+iteration 163
+iteration 164
+iteration 165
+iteration 166
+iteration 167
+iteration 168
+iteration 169
+iteration 170
+iteration 171
+iteration 172
+iteration 173
+iteration 174
+iteration 175
+iteration 176
+iteration 177
+iteration 178
+iteration 179
+iteration 180
+iteration 181
+iteration 182
+iteration 183
+iteration 184
+iteration 185
+iteration 186
+iteration 187
+iteration 188
+iteration 189
+iteration 190
+iteration 191
+iteration 192
+iteration 193
+iteration 194
+iteration 195
+iteration 196
+iteration 197
+iteration 198
+iteration 199
+iteration 200
+iteration 201
+iteration 202
+iteration 203
+iteration 204
+iteration 205
+iteration 206
+iteration 207
+iteration 208
+iteration 209
+iteration 210
+iteration 211
+iteration 212
+iteration 213
+iteration 214
+iteration 215
+iteration 216
+iteration 217
+iteration 218
+iteration 219
+iteration 220
+iteration 221
+iteration 222
+iteration 223
+iteration 224
+iteration 225
+iteration 226
+iteration 227
+iteration 228
+iteration 229
+iteration 230
+iteration 231
+iteration 232
+iteration 233
+iteration 234
+iteration 235
+iteration 236
+iteration 237
+iteration 238
+iteration 239
+iteration 240
+iteration 241
+iteration 242
+iteration 243
+iteration 244
+iteration 245
+iteration 246
+iteration 247
+iteration 248
+iteration 249
+iteration 250
+iteration 251
+iteration 252
+iteration 253
+iteration 254
+iteration 255
+iteration 256
+iteration 257
+iteration 258
+iteration 259
+iteration 260
+iteration 261
+iteration 262
+iteration 263
+iteration 264
+iteration 265
+iteration 266
+iteration 267
+iteration 268
+iteration 269
+iteration 270
+iteration 271
+iteration 272
+iteration 273
+iteration 274
+iteration 275
+iteration 276
+iteration 277
+iteration 278
+iteration 279
+iteration 280
+iteration 281
+iteration 282
+iteration 283
+iteration 284
+iteration 285
+iteration 286
+iteration 287
+iteration 288
+iteration 289
+iteration 290
+iteration 291
+iteration 292
+iteration 293
+iteration 294
+iteration 295
+iteration 296
+iteration 297
+iteration 298
+iteration 299
+iteration 300
+iteration 301
+iteration 302
+iteration 303
+iteration 304
+iteration 305
+iteration 306
+iteration 307
+iteration 308
+iteration 309
+iteration 310
+iteration 311
+iteration 312
+iteration 313
+iteration 314
+iteration 315
+iteration 316
+iteration 317
+iteration 318
+iteration 319
+iteration 320
+iteration 321
+iteration 322
+iteration 323
+iteration 324
+iteration 325
+iteration 326
+iteration 327
+iteration 328
+iteration 329
+iteration 330
+iteration 331
+iteration 332
+iteration 333
+iteration 334
+iteration 335
+iteration 336
+iteration 337
+iteration 338
+iteration 339
+iteration 340
+iteration 341
+iteration 342
+iteration 343
+iteration 344
+iteration 345
+iteration 346
+iteration 347
+iteration 348
+iteration 349
+iteration 350
+iteration 351
+iteration 352
+iteration 353
+iteration 354
+iteration 355
+iteration 356
+iteration 357
+iteration 358
+iteration 359
+iteration 360
+iteration 361
+iteration 362
+iteration 363
+iteration 364
+iteration 365
+iteration 366
+iteration 367
+iteration 368
+iteration 369
+iteration 370
+iteration 371
+iteration 372
+iteration 373
+iteration 374
+iteration 375
+iteration 376
+iteration 377
+iteration 378
+iteration 379
+iteration 380
+iteration 381
+iteration 382
+iteration 383
+iteration 384
+iteration 385
+iteration 386
+iteration 387
+iteration 388
+iteration 389
+iteration 390
+iteration 391
+iteration 392
+iteration 393
+iteration 394
+iteration 395
+iteration 396
+iteration 397
+iteration 398
+iteration 399
+iteration 400
+iteration 401
+iteration 402
+iteration 403
+iteration 404
+iteration 405
+iteration 406
+iteration 407
+iteration 408
+iteration 409
+iteration 410
+iteration 411
+iteration 412
+iteration 413
+iteration 414
+iteration 415
+iteration 416
+iteration 417
+iteration 418
+iteration 419
+iteration 420
+iteration 421
+iteration 422
+iteration 423
+iteration 424
+iteration 425
+iteration 426
+iteration 427
+iteration 428
+iteration 429
+iteration 430
+iteration 431
+iteration 432
+iteration 433
+iteration 434
+iteration 435
+iteration 436
+iteration 437
+iteration 438
+iteration 439
+iteration 440
+iteration 441
+iteration 442
+iteration 443
+iteration 444
+iteration 445
+iteration 446
+iteration 447
+iteration 448
+iteration 449
+iteration 450
+iteration 451
+iteration 452
+iteration 453
+iteration 454
+iteration 455
+iteration 456
+iteration 457
+iteration 458
+iteration 459
+iteration 460
+iteration 461
+iteration 462
+iteration 463
+iteration 464
+iteration 465
+iteration 466
+iteration 467
+iteration 468
+iteration 469
+iteration 470
+iteration 471
+iteration 472
+iteration 473
+iteration 474
+iteration 475
+iteration 476
+iteration 477
+iteration 478
+iteration 479
+iteration 480
+iteration 481
+iteration 482
+iteration 483
+iteration 484
+iteration 485
+iteration 486
+iteration 487
+iteration 488
+iteration 489
+iteration 490
+iteration 491
+iteration 492
+iteration 493
+iteration 494
+iteration 495
+iteration 496
+iteration 497
+iteration 498
+iteration 499
+iteration 500
+iteration 501
+iteration 502
+iteration 503
+iteration 504
+iteration 505
+iteration 506
+iteration 507
+iteration 508
+iteration 509
+iteration 510
+iteration 511
+iteration 512
+iteration 513
+iteration 514
+iteration 515
+iteration 516
+iteration 517
+iteration 518
+iteration 519
+iteration 520
+iteration 521
+iteration 522
+iteration 523
+iteration 524
+iteration 525
+iteration 526
+iteration 527
+iteration 528
+iteration 529
+iteration 530
+iteration 531
+iteration 532
+iteration 533
+iteration 534
+iteration 535
+iteration 536
+iteration 537
+iteration 538
+iteration 539
+iteration 540
+iteration 541
+iteration 542
+iteration 543
+iteration 544
+iteration 545
+iteration 546
+iteration 547
+iteration 548
+iteration 549
+iteration 550
+iteration 551
+iteration 552
+iteration 553
+iteration 554
+iteration 555
+iteration 556
+iteration 557
+iteration 558
+iteration 559
+iteration 560
+iteration 561
+iteration 562
+iteration 563
+iteration 564
+iteration 565
+iteration 566
+iteration 567
+iteration 568
+iteration 569
+iteration 570
+iteration 571
+iteration 572
+iteration 573
+iteration 574
+iteration 575
+iteration 576
+iteration 577
+iteration 578
+iteration 579
+iteration 580
+iteration 581
+iteration 582
+iteration 583
+iteration 584
+iteration 585
+iteration 586
+iteration 587
+iteration 588
+iteration 589
+iteration 590
+iteration 591
+iteration 592
+iteration 593
+iteration 594
+iteration 595
+iteration 596
+iteration 597
+iteration 598
+iteration 599
+iteration 600
+iteration 601
+iteration 602
+iteration 603
+iteration 604
+iteration 605
+iteration 606
+iteration 607
+iteration 608
+iteration 609
+iteration 610
+iteration 611
+iteration 612
+iteration 613
+iteration 614
+iteration 615
+iteration 616
+iteration 617
+iteration 618
+iteration 619
+iteration 620
+iteration 621
+iteration 622
+iteration 623
+iteration 624
+iteration 625
+iteration 626
+iteration 627
+iteration 628
+iteration 629
+iteration 630
+iteration 631
+iteration 632
+iteration 633
+iteration 634
+iteration 635
+iteration 636
+iteration 637
+iteration 638
+iteration 639
+iteration 640
+iteration 641
+iteration 642
+iteration 643
+iteration 644
+iteration 645
+iteration 646
+iteration 647
+iteration 648
+iteration 649
+iteration 650
+iteration 651
+iteration 652
+iteration 653
+iteration 654
+iteration 655
+iteration 656
+iteration 657
+iteration 658
+iteration 659
+iteration 660
+iteration 661
+iteration 662
+iteration 663
+iteration 664
+iteration 665
+iteration 666
+iteration 667
+iteration 668
+iteration 669
+iteration 670
+iteration 671
+iteration 672
+iteration 673
+iteration 674
+iteration 675
+iteration 676
+iteration 677
+iteration 678
+iteration 679
+iteration 680
+iteration 681
+iteration 682
+iteration 683
+iteration 684
+iteration 685
+iteration 686
+iteration 687
+iteration 688
+iteration 689
+iteration 690
+iteration 691
+iteration 692
+iteration 693
+iteration 694
+iteration 695
+iteration 696
+iteration 697
+iteration 698
+iteration 699
+iteration 700
+iteration 701
+iteration 702
+iteration 703
+iteration 704
+iteration 705
+iteration 706
+iteration 707
+iteration 708
+iteration 709
+iteration 710
+iteration 711
+iteration 712
+iteration 713
+iteration 714
+iteration 715
+iteration 716
+iteration 717
+iteration 718
+iteration 719
+iteration 720
+iteration 721
+iteration 722
+iteration 723
+iteration 724
+iteration 725
+iteration 726
+iteration 727
+iteration 728
+iteration 729
+iteration 730
+iteration 731
+iteration 732
+iteration 733
+iteration 734
+iteration 735
+iteration 736
+iteration 737
+iteration 738
+iteration 739
+iteration 740
+iteration 741
+iteration 742
+iteration 743
+iteration 744
+iteration 745
+iteration 746
+iteration 747
+iteration 748
+iteration 749
+iteration 750
+iteration 751
+iteration 752
+iteration 753
+iteration 754
+iteration 755
+iteration 756
+iteration 757
+iteration 758
+iteration 759
+iteration 760
+iteration 761
+iteration 762
+iteration 763
+iteration 764
+iteration 765
+iteration 766
+iteration 767
+iteration 768
+iteration 769
+iteration 770
+iteration 771
+iteration 772
+iteration 773
+iteration 774
+iteration 775
+iteration 776
+iteration 777
+iteration 778
+iteration 779
+iteration 780
+iteration 781
+iteration 782
+iteration 783
+iteration 784
+iteration 785
+iteration 786
+iteration 787
+iteration 788
+iteration 789
+iteration 790
+iteration 791
+iteration 792
+iteration 793
+iteration 794
+iteration 795
+iteration 796
+iteration 797
+iteration 798
+iteration 799
+iteration 800
+iteration 801
+iteration 802
+iteration 803
+iteration 804
+iteration 805
+iteration 806
+iteration 807
+iteration 808
+iteration 809
+iteration 810
+iteration 811
+iteration 812
+iteration 813
+iteration 814
+iteration 815
+iteration 816
+iteration 817
+iteration 818
+iteration 819
+iteration 820
+iteration 821
+iteration 822
+iteration 823
+iteration 824
+iteration 825
+iteration 826
+iteration 827
+iteration 828
+iteration 829
+iteration 830
+iteration 831
+iteration 832
+iteration 833
+iteration 834
+iteration 835
+iteration 836
+iteration 837
+iteration 838
+iteration 839
+iteration 840
+iteration 841
+iteration 842
+iteration 843
+iteration 844
+iteration 845
+iteration 846
+iteration 847
+iteration 848
+iteration 849
+iteration 850
+iteration 851
+iteration 852
+iteration 853
+iteration 854
+iteration 855
+iteration 856
+iteration 857
+iteration 858
+iteration 859
+iteration 860
+iteration 861
+iteration 862
+iteration 863
+iteration 864
+iteration 865
+iteration 866
+iteration 867
+iteration 868
+iteration 869
+iteration 870
+iteration 871
+iteration 872
+iteration 873
+iteration 874
+iteration 875
+iteration 876
+iteration 877
+iteration 878
+iteration 879
+iteration 880
+iteration 881
+iteration 882
+iteration 883
+iteration 884
+iteration 885
+iteration 886
+iteration 887
+iteration 888
+iteration 889
+iteration 890
+iteration 891
+iteration 892
+iteration 893
+iteration 894
+iteration 895
+iteration 896
+iteration 897
+iteration 898
+iteration 899
+iteration 900
+iteration 901
+iteration 902
+iteration 903
+iteration 904
+iteration 905
+iteration 906
+iteration 907
+iteration 908
+iteration 909
+iteration 910
+iteration 911
+iteration 912
+iteration 913
+iteration 914
+iteration 915
+iteration 916
+iteration 917
+iteration 918
+iteration 919
+iteration 920
+iteration 921
+iteration 922
+iteration 923
+iteration 924
+iteration 925
+iteration 926
+iteration 927
+iteration 928
+iteration 929
+iteration 930
+iteration 931
+iteration 932
+iteration 933
+iteration 934
+iteration 935
+iteration 936
+iteration 937
+iteration 938
+iteration 939
+iteration 940
+iteration 941
+iteration 942
+iteration 943
+iteration 944
+iteration 945
+iteration 946
+iteration 947
+iteration 948
+iteration 949
+iteration 950
+iteration 951
+iteration 952
+iteration 953
+iteration 954
+iteration 955
+iteration 956
+iteration 957
+iteration 958
+iteration 959
+iteration 960
+iteration 961
+iteration 962
+iteration 963
+iteration 964
+iteration 965
+iteration 966
+iteration 967
+iteration 968
+iteration 969
+iteration 970
+iteration 971
+iteration 972
+iteration 973
+iteration 974
+iteration 975
+iteration 976
+iteration 977
+iteration 978
+iteration 979
+iteration 980
+iteration 981
+iteration 982
+iteration 983
+iteration 984
+iteration 985
+iteration 986
+iteration 987
+iteration 988
+iteration 989
+iteration 990
+iteration 991
+iteration 992
+iteration 993
+iteration 994
+iteration 995
+iteration 996
+iteration 997
+iteration 998
+iteration 999
+TEST PASSED
 $ 
 
-test stress FAILED (0 of 10)
+test stress PASSED (10 of 10)
  (Creates and deletes a lot of small files one at a time to make sure nothing breaks under a heavy load.)
- tester failed
 
 starting stress2
 
@@ -840,13 +1924,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -857,7 +1945,8 @@ cat
 rm
 zombie
 wc
-balloc: first 489 blocks have been allocated
+write2
+balloc: first 602 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -870,13 +1959,56 @@ init: starting sh
 $ tester
 tester
 iteration 0
-Data mismatch.
-TEST FAILED
-
+iteration 1
+iteration 2
+iteration 3
+iteration 4
+iteration 5
+iteration 6
+iteration 7
+iteration 8
+iteration 9
+iteration 10
+iteration 11
+iteration 12
+iteration 13
+iteration 14
+iteration 15
+iteration 16
+iteration 17
+iteration 18
+iteration 19
+iteration 20
+iteration 21
+iteration 22
+iteration 23
+iteration 24
+iteration 25
+iteration 26
+iteration 27
+iteration 28
+iteration 29
+iteration 30
+iteration 31
+iteration 32
+iteration 33
+iteration 34
+iteration 35
+iteration 36
+iteration 37
+iteration 38
+iteration 39
+iteration 40
+iteration 41
+iteration 42
+iteration 43
+iteration 44
+cpu0: panic: dirlink
+ 102484 105789 105822 104f0f 1060f9 105eed 0 0 0 0
 
 test stress2 FAILED (0 of 10)
  (Creates and deletes a lot of small files 100 of them at a time to make sure nothing breaks under a heavy load. ***Note that the test will take a VERY long time since a lot of files are created.***)
- tester failed
+ xv6 kernel panic
 
 starting smallbig
 
@@ -899,13 +2031,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -916,7 +2052,8 @@ cat
 rm
 zombie
 wc
-balloc: first 491 blocks have been allocated
+write2
+balloc: first 604 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -929,7 +2066,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-$ 
+
 
 test smallbig PASSED (10 of 10)
  (Creates bunch of small files; then creates bunch of big files to make sure normal files are not affected.)
@@ -955,13 +2092,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -972,7 +2113,8 @@ cat
 rm
 zombie
 wc
-balloc: first 490 blocks have been allocated
+write2
+balloc: first 603 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -984,12 +2126,7 @@ cpu0: starting
 init: starting sh
 $ tester
 tester
-latest_inode = 23
-creating file at inode 24
-creating file at inode 25
-creating file at inode 26
-creating file at inode 27
-creating file at inode 28
+latest_inode = 28
 creating file at inode 29
 creating file at inode 30
 creating file at inode 31
@@ -1162,25 +2299,24 @@ creating file at inode 197
 creating file at inode 198
 creating file at inode 199
 used up all inodes
-deleting and recreating file at inode 33
-deleting and recreating file at inode 42
-deleting and recreating file at inode 51
-deleting and recreating file at inode 60
-deleting and recreating file at inode 69
-deleting and recreating file at inode 78
-deleting and recreating file at inode 87
-deleting and recreating file at inode 96
-deleting and recreating file at inode 105
-deleting and recreating file at inode 114
-deleting and recreating file at inode 123
-deleting and recreating file at inode 132
-deleting and recreating file at inode 141
-deleting and recreating file at inode 150
-deleting and recreating file at inode 159
-deleting and recreating file at inode 168
-deleting and recreating file at inode 177
-deleting and recreating file at inode 186
-deleting and recreating file at inode 195
+deleting and recreating file at inode 38
+deleting and recreating file at inode 47
+deleting and recreating file at inode 56
+deleting and recreating file at inode 65
+deleting and recreating file at inode 74
+deleting and recreating file at inode 83
+deleting and recreating file at inode 92
+deleting and recreating file at inode 101
+deleting and recreating file at inode 110
+deleting and recreating file at inode 119
+deleting and recreating file at inode 128
+deleting and recreating file at inode 137
+deleting and recreating file at inode 146
+deleting and recreating file at inode 155
+deleting and recreating file at inode 164
+deleting and recreating file at inode 173
+deleting and recreating file at inode 182
+deleting and recreating file at inode 191
 TEST PASSED
 
 
@@ -1208,13 +2344,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -1225,7 +2365,8 @@ cat
 rm
 zombie
 wc
-balloc: first 490 blocks have been allocated
+write2
+balloc: first 603 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -1237,12 +2378,7 @@ cpu0: starting
 init: starting sh
 $ tester
 tester
-latest_inode = 23
-creating file at inode 24
-creating file at inode 25
-creating file at inode 26
-creating file at inode 27
-creating file at inode 28
+latest_inode = 28
 creating file at inode 29
 creating file at inode 30
 creating file at inode 31
@@ -1415,65 +2551,62 @@ creating file at inode 197
 creating file at inode 198
 creating file at inode 199
 used up all inodes
-deleting file at inode 33
-deleting file at inode 42
-deleting file at inode 51
-deleting file at inode 60
-deleting file at inode 69
-deleting file at inode 78
-deleting file at inode 87
-deleting file at inode 96
-deleting file at inode 105
-deleting file at inode 114
-deleting file at inode 123
-deleting file at inode 132
-deleting file at inode 141
-deleting file at inode 150
-deleting file at inode 159
-deleting file at inode 168
-deleting file at inode 177
-deleting file at inode 186
-deleting file at inode 195
-testing existence of file at inode 33
-testing existence of file at inode 42
-testing existence of file at inode 51
-testing existence of file at inode 60
-testing existence of file at inode 69
-testing existence of file at inode 78
-testing existence of file at inode 87
-testing existence of file at inode 96
-testing existence of file at inode 105
-testing existence of file at inode 114
-testing existence of file at inode 123
-testing existence of file at inode 132
-testing existence of file at inode 141
-testing existence of file at inode 150
-testing existence of file at inode 159
-testing existence of file at inode 168
-testing existence of file at inode 177
-testing existence of file at inode 186
-testing existence of file at inode 195
-recreating file at inode 33
-recreating file at inode 42
-recreating file at inode 51
-recreating file at inode 60
-recreating file at inode 69
-recreating file at inode 78
-recreating file at inode 87
-recreating file at inode 96
-recreating file at inode 105
-recreating file at inode 114
-recreating file at inode 123
-recreating file at inode 132
-recreating file at inode 141
-recreating file at inode 150
-recreating file at inode 159
-recreating file at inode 168
-recreating file at inode 177
-recreating file at inode 186
-recreating file at inode 195
+deleting file at inode 38
+deleting file at inode 47
+deleting file at inode 56
+deleting file at inode 65
+deleting file at inode 74
+deleting file at inode 83
+deleting file at inode 92
+deleting file at inode 101
+deleting file at inode 110
+deleting file at inode 119
+deleting file at inode 128
+deleting file at inode 137
+deleting file at inode 146
+deleting file at inode 155
+deleting file at inode 164
+deleting file at inode 173
+deleting file at inode 182
+deleting file at inode 191
+testing existence of file at inode 38
+testing existence of file at inode 47
+testing existence of file at inode 56
+testing existence of file at inode 65
+testing existence of file at inode 74
+testing existence of file at inode 83
+testing existence of file at inode 92
+testing existence of file at inode 101
+testing existence of file at inode 110
+testing existence of file at inode 119
+testing existence of file at inode 128
+testing existence of file at inode 137
+testing existence of file at inode 146
+testing existence of file at inode 155
+testing existence of file at inode 164
+testing existence of file at inode 173
+testing existence of file at inode 182
+testing existence of file at inode 191
+recreating file at inode 38
+recreating file at inode 47
+recreating file at inode 56
+recreating file at inode 65
+recreating file at inode 74
+recreating file at inode 83
+recreating file at inode 92
+recreating file at inode 101
+recreating file at inode 110
+recreating file at inode 119
+recreating file at inode 128
+recreating file at inode 137
+recreating file at inode 146
+recreating file at inode 155
+recreating file at inode 164
+recreating file at inode 173
+recreating file at inode 182
+recreating file at inode 191
 TEST PASSED
-
+$
 
 test inode2 PASSED (10 of 10)
  (Uses all inodes in the file system; then repeatedly deletes bunch of files and then creates that many files and makes sure the correct inodes are reused for the new files.)
@@ -1499,13 +2632,17 @@ used 29 (bit 1 ninode 26) free 29 total 1024
 read2
 echo
 hello
+read
+write4
 kill
 ln
+stress2
 stressfs
 usertests
 ls
 init
 mkdir
+write3
 tester
 grep
 sh
@@ -1516,7 +2653,8 @@ cat
 rm
 zombie
 wc
-balloc: first 536 blocks have been allocated
+write2
+balloc: first 649 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
 make qemu-nox CPUS=1
@@ -1627,13 +2765,12 @@ test remove PASSED (10 of 10)
 test fulldisk PASSED (10 of 10)
  (First uses all free blocks on disk for normal files and then makes sure small files can still be created. ***Note that the test will take a while since big files are created.***)
 
-test stress FAILED (0 of 10)
+test stress PASSED (10 of 10)
  (Creates and deletes a lot of small files one at a time to make sure nothing breaks under a heavy load.)
- tester failed
 
 test stress2 FAILED (0 of 10)
  (Creates and deletes a lot of small files 100 of them at a time to make sure nothing breaks under a heavy load. ***Note that the test will take a VERY long time since a lot of files are created.***)
- tester failed
+ xv6 kernel panic
 
 test smallbig PASSED (10 of 10)
  (Creates bunch of small files; then creates bunch of big files to make sure normal files are not affected.)
@@ -1648,6 +2785,6 @@ test usertests FAILED (0 of 10)
  (Running standard tests to make sure you did not break anything for normal files. ***Note that the test will take a while since a lot of things are being tested.***)
  tester failed
 
-Passed 13 of 20 tests.
-Overall 13 of 20
-Points 120 of 190
+Passed 14 of 20 tests.
+Overall 14 of 20
+Points 130 of 190
