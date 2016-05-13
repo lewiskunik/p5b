@@ -12,6 +12,7 @@ USER_PROGS := \
 	ln\
 	ls\
 	mkdir\
+	read2\
 	rm\
 	sh\
 	stressfs\

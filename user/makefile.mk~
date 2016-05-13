@@ -4,6 +4,7 @@ USER_PROGS := \
 	cat\
 	echo\
 	forktest\
+	fulldisk\
 	grep\
 	hello\
 	init\

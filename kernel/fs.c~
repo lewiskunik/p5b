@@ -370,24 +370,27 @@ itrunc(struct inode *ip)
   struct buf *bp;
   uint *a;
 
-  for(i = 0; i < NDIRECT; i++){
-    if(ip->addrs[i]){
-      bfree(ip->dev, ip->addrs[i]);
-      ip->addrs[i] = 0;
-    }
-  }
+  if(ip->type == T_FILE){
+  	for(i = 0; i < NDIRECT; i++){
+  	  if(ip->addrs[i]){
+  	    bfree(ip->dev, ip->addrs[i]);
+  	    ip->addrs[i] = 0;
+  	  }
+  	}
   
-  if(ip->addrs[NDIRECT]){
-    bp = bread(ip->dev, ip->addrs[NDIRECT]);
-    a = (uint*)bp->data;
-    for(j = 0; j < NINDIRECT; j++){
-      if(a[j])
-        bfree(ip->dev, a[j]);
-    }
-    brelse(bp);
-    bfree(ip->dev, ip->addrs[NDIRECT]);
-    ip->addrs[NDIRECT] = 0;
+  	if(ip->addrs[NDIRECT]){
+  	  bp = bread(ip->dev, ip->addrs[NDIRECT]);
+  	  a = (uint*)bp->data;
+  	  for(j = 0; j < NINDIRECT; j++){
+  	    if(a[j])
+  	      bfree(ip->dev, a[j]);
+  	  }
+  	  brelse(bp);
+  	  bfree(ip->dev, ip->addrs[NDIRECT]);
+  	  ip->addrs[NDIRECT] = 0;
+  	}
   }
+
 
   ip->size = 0;
   iupdate(ip);
@@ -410,29 +413,52 @@ readi(struct inode *ip, char *dst, uint off, uint n)
 {
   uint tot, m;
   struct buf *bp;
-
+  //cprintf("off is %d, n (#bytes to read) is: %d\n", off, n);
   if(ip->type == T_DEV){
     if(ip->major < 0 || ip->major >= NDEV || !devsw[ip->major].read)
       return -1;
     return devsw[ip->major].read(ip, dst, n);
   }
 
-  if(off > ip->size || off + n < off)
-    return -1;
-  if(off + n > ip->size)
-    n = ip->size - off;
 
-  for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
-    uint sector_number = bmap(ip, off/BSIZE);
-    if(sector_number == 0){ //failed to find block
-      panic("readi: trying to read a block that was never allocated");
-    }
+  if(ip->type == T_FILE){
+  	if(off > ip->size || off + n < off)
+  	  return -1;
+  	if(off + n > ip->size)
+  	  n = ip->size - off;
+
+  	for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
+  	  uint sector_number = bmap(ip, off/BSIZE);
+  	  if(sector_number == 0){ //failed to find block
+  	    panic("readi: trying to read a block that was never allocated");
+  	  }
     
-    bp = bread(ip->dev, sector_number);
-    m = min(n - tot, BSIZE - off%BSIZE);
-    memmove(dst, bp->data + off%BSIZE, m);
-    brelse(bp);
+   	bp = bread(ip->dev, sector_number);
+    	m = min(n - tot, BSIZE - off%BSIZE);
+    	memmove(dst, bp->data + off%BSIZE, m);
+    	brelse(bp);
+  	}
   }
+
+  if(ip->type == T_SMALLFILE){
+  	if(off > ip->size || off + n < off)
+  	  return -1;
+  	if(off + n > ip->size)
+  	  n = ip->size - off;
+
+  	for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
+  	  uint sector_number = bmap(ip, off/BSIZE);
+  	  if(sector_number == 0){ //failed to find block
+  	    panic("readi: trying to read a block that was never allocated");
+  	  }
+    
+   	bp = bread(ip->dev, sector_number);
+    	m = min(n - tot, BSIZE - off%BSIZE);
+    	memmove(dst, bp->data + off%BSIZE, m);
+    	brelse(bp);
+  	}
+  }
+
   return n;
 }
 
@@ -458,7 +484,7 @@ writei(struct inode *ip, char *src, uint off, uint n)
 
   //am I reading or writing a reg. file, or am I reading/writing a small file?
   if(ip->type == T_FILE || ip->type == T_DIR){
-	//cprintf("inode file type: %d\n", ip->type);
+	
   	if(off > ip->size || off + n < off)
   	  return -1;
   	if(off + n > MAXFILE*BSIZE)
@@ -483,7 +509,7 @@ writei(struct inode *ip, char *src, uint off, uint n)
   ///do writing a little different if it is a small file
   if(ip->type == T_SMALLFILE){
 
-	//cprintf("off = %d, n = %d\n", off, n);
+	//cprintf("off is %d, n is %d\n", off, n);
 	if(off > ip->size || off + n < off) //if out of bounds, return -1
   	  return -1;
   	if(off + n > 52)  // if offset (current end of data) + data to be allocation == more than 52 
@@ -492,20 +518,18 @@ writei(struct inode *ip, char *src, uint off, uint n)
 
   	for(tot=0; tot<n; tot+=m, off+=m, src+=m){
   	  uint sector_number = bmap(ip, off/BSIZE); //should pretty much be zero for all small files
-  	  if(sector_number == 0){ //failed to find block
-  	    n = tot; //return number of bytes written so far
-  	    break;
-  	  }
+  	  //if(sector_number == 0){ //failed to find block
+  	    //n = tot; //return number of bytes written so far
+  	    //break;
+  	  //}
           
   	  bp = bread(ip->dev, sector_number);
 	  //n-tot is the remainder of bits left over from the write (only nonzero if couldn't write all bytes)
   	  m = min(n - tot, BSIZE - off%BSIZE);
-  	  memmove(bp->data + off%BSIZE, src, m); //memory is written here
+  	  memmove(ip->addrs + off%BSIZE, src, m); //memory is written here
   	  bwrite(bp);
   	  brelse(bp);
   	}
-
-
   }
   
 

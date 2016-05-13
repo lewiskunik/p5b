@@ -196,7 +196,7 @@ sys_unlink(void)
     iunlockput(dp);
     return -1;
   }
-
+  //////LOOK THIS IS WHERE MEMORY IS ALTERED
   memset(&de, 0, sizeof(de));
   if(writei(dp, (char*)&de, off, sizeof(de)) != sizeof(de))
     panic("unlink: writei");
