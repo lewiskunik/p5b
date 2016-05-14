@@ -433,18 +433,21 @@ readi(struct inode *ip, char *dst, uint off, uint n)
   	if(off > ip->size || off + n < off)
   	  return -1;
 
+	if(off + n > ip->size)
+  	  n = ip->size - off;
+
 	if(ip->type == T_SMALLFILE){
   	
-  		if(off + n > ip->size)
-  	  	n = ip->size - off;
+  		//if(off + n > ip->size)
+  	  		//n = ip->size - off;
     		//m = min(n - tot, 52 - off%52);
-    		memmove(dst, ip->addrs + off, (char)n);
-		//cprintf("addr here: %d\n", ip->addrs + off%52);
+    		memmove(dst, (char*)ip->addrs + off, n);
+		//cprintf("data is %d  and n is %d\n", *(ip->addrs + off), n);
+		//cprintf("off is: %d, addr here: %d\n", off, ip->addrs + off);
 		return n;	
   	}
 
-  	if(off + n > ip->size)
-  	  n = ip->size - off;
+  	
 
   	for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
   	  uint sector_number = bmap(ip, off/BSIZE);
@@ -498,42 +501,22 @@ writei(struct inode *ip, char *src, uint off, uint n)
   if(ip->type == T_SMALLFILE){
 
 	//cprintf("off is %d, n is %d\n", off, n);
-	//if(off > ip->size || off + n < off) //if out of bounds, return -1
-  	  //return -1;
+	
   	if(off + n > 52)  // if offset (current end of data) + data to be allocation == more than 52 
 	  n = 52 - off;   // bytes, n is changed to only add the max possible to get to 52 bytes
-  	    
-
-  	//for(tot=0; tot<n; tot+=m, off+=m, src+=m){
-	  //if(off > 52){
-		//return -1; //can't write anymore
-	  //}
-  	  //uint sector_number = bmap(ip, off/52); //should pretty much be zero for all small files
-  	  //if(sector_number == 0){ //failed to find block
-  	    //n = tot; //return number of bytes written so far
-  	    //break;
-  	  //}
-          
-  	  //bp = bread(ip->dev, sector_number);
-	  //n-tot is the remainder of bits left over from the write (only nonzero if couldn't write all bytes)
-  	  //m = min(n - tot, 52 - off%52);
-	  //if(off + m > 52)
-		//m = 52 - off;
 	
-  	  memmove(ip->addrs + off, src, (char)n); //memory is written here
+  	  memmove((char*)(ip->addrs) + off, src, n); //memory is written here
 	  //cprintf("addr here: %d\n", ip->addrs + off%52);
-	  //*(ip->addrs + off%BSIZE) = src;
-  	  //bwrite(bp);
-  	  //brelse(bp);
-  	//}
-	  ip->size = off+n; //check
-	  iupdate(ip);
+	  
+	  //if(ip->size < off + n){
+	  	ip->size = off+n; //check
+		iupdate(ip);
+	  //}
+	  
 	  return n;
 
   }
   
-
-
 
   	if(off + n > MAXFILE*BSIZE)
   	  n = MAXFILE*BSIZE - off;

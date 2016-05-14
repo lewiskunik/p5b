@@ -74,7 +74,6 @@ main(int argc, char *argv[])
   
   for(i = 0; i < SIZE; i++){
     if(buf[i] != buf2[i]){
-	printf(1, "buf = %d, buf2 = %d\n", buf[i], buf2[i]);
       printf(1, "Data mismatch.\n");
       test_failed();
     }

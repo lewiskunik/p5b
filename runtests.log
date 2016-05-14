@@ -192,7 +192,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-$ 
+
 
 test open PASSED (10 of 10)
  (Open() called a second time without O_CREATE and O_SMALLFILE. Checks file's type to make sure it is T_SMALLFILE and that read and write still work)
@@ -255,7 +255,7 @@ tester
 bytes written = 25
 bytes read = 25
 TEST PASSED
-
+$ 
 
 test read PASSED (10 of 10)
  (Tries to read more than possible and makes sure only amount available is read.)
@@ -315,13 +315,11 @@ cpu0: starting
 init: starting sh
 $ tester
 tester
-Data mismatch.
-TEST FAILED
+TEST PASSED
 
 
-test read2 FAILED (0 of 10)
+test read2 PASSED (10 of 10)
  (Reads one byte at a time from small file.)
- tester failed
 
 starting write
 
@@ -381,7 +379,7 @@ tester
 bytes written = 52
 bytes read = 52
 TEST PASSED
-$ 
+
 
 test write PASSED (10 of 10)
  (Tries to write more than possible to a small file and makes sure only 52 bytes are written.)
@@ -502,13 +500,11 @@ cpu0: starting
 init: starting sh
 $ tester
 tester
-Data mismatch.
-TEST FAILED
+TEST PASSED
 $ 
 
-test write3 FAILED (0 of 10)
+test write3 PASSED (10 of 10)
  (Repeatedly opens, writes to the end, closes a small file until file is full.)
- tester failed
 
 starting write4
 
@@ -565,13 +561,11 @@ cpu0: starting
 init: starting sh
 $ tester
 tester
-Data mismatch.
-TEST FAILED
+TEST PASSED
+$ 
 
-
-test write4 FAILED (0 of 10)
+test write4 PASSED (10 of 10)
  (Small write followed by a big write to a small file should truncate the big write upto max small file size.)
- tester failed
 
 starting readonly
 
@@ -817,7 +811,7 @@ creating large file: 2
 creating large file: 3
 all free blocks are used
 cpu0: panic: dirlink
- 102356 10565d 1056f6 104de3 105fcd 105dc1 0 0 0 0
+ 10230d 105615 1056ae 104d9b 105f85 105d79 0 0 0 0
 
 test fulldisk FAILED (0 of 10)
  (First uses all free blocks on disk for normal files and then makes sure small files can still be created. ***Note that the test will take a while since big files are created.***)
@@ -1879,7 +1873,7 @@ iteration 997
 iteration 998
 iteration 999
 TEST PASSED
-
+$ 
 
 test stress PASSED (10 of 10)
  (Creates and deletes a lot of small files one at a time to make sure nothing breaks under a heavy load.)
@@ -2758,7 +2752,7 @@ fork test: ok
 bigdir test: ok
 exec test
 TEST PASSED
-
+$ 
 
 test usertests PASSED (10 of 10)
  (Running standard tests to make sure you did not break anything for normal files. ***Note that the test will take a while since a lot of things are being tested.***)
@@ -2780,9 +2774,8 @@ test open PASSED (10 of 10)
 test read PASSED (10 of 10)
  (Tries to read more than possible and makes sure only amount available is read.)
 
-test read2 FAILED (0 of 10)
+test read2 PASSED (10 of 10)
  (Reads one byte at a time from small file.)
- tester failed
 
 test write PASSED (10 of 10)
  (Tries to write more than possible to a small file and makes sure only 52 bytes are written.)
@@ -2790,13 +2783,11 @@ test write PASSED (10 of 10)
 test write2 PASSED (10 of 10)
  (Repeatedly opens, writes, closes a small file. The last write should be the one that is persisted.)
 
-test write3 FAILED (0 of 10)
+test write3 PASSED (10 of 10)
  (Repeatedly opens, writes to the end, closes a small file until file is full.)
- tester failed
 
-test write4 FAILED (0 of 10)
+test write4 PASSED (10 of 10)
  (Small write followed by a big write to a small file should truncate the big write upto max small file size.)
- tester failed
 
 test readonly PASSED (10 of 10)
  (Makes sure small files can be opened as read only and writes would fail.)
@@ -2829,6 +2820,6 @@ test inode2 PASSED (10 of 10)
 test usertests PASSED (10 of 10)
  (Running standard tests to make sure you did not break anything for normal files. ***Note that the test will take a while since a lot of things are being tested.***)
 
-Passed 16 of 20 tests.
-Overall 16 of 20
-Points 150 of 190
+Passed 19 of 20 tests.
+Overall 19 of 20
+Points 180 of 190
