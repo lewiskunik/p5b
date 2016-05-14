@@ -8,25 +8,7 @@ build xv6 using make
 **********************************************************************
 Trying to build project using make
 make
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
-		-M -MG kernel/fs.c -MF kernel/fs.d -MT kernel/fs.d -MT kernel/fs.o
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o kernel/fs.o kernel/fs.c
-ld  -m    elf_i386 -nostdlib --omagic \
-		--section-start=.text=0x100000 --entry=main --output=kernel/kernel \
-		kernel/multiboot.o kernel/data.o kernel/bio.o kernel/console.o kernel/exec.o kernel/file.o kernel/fs.o kernel/ide.o kernel/ioapic.o kernel/kalloc.o kernel/kbd.o kernel/lapic.o kernel/main.o kernel/mp.o kernel/picirq.o kernel/pipe.o kernel/proc.o kernel/spinlock.o kernel/string.o kernel/swtch.o kernel/syscall.o kernel/sysfile.o kernel/sysproc.o kernel/timer.o kernel/trapasm.o kernel/trap.o kernel/uart.o kernel/vectors.o kernel/vm.o \
-		-b binary initcode bootother
-dd if=/dev/zero of=xv6.img count=10000
-10000+0 records in
-10000+0 records out
-5120000 bytes (5.1 MB) copied, 0.0120638 s, 424 MB/s
-dd if=kernel/bootblock of=xv6.img conv=notrunc
-1+0 records in
-1+0 records out
-512 bytes (512 B) copied, 7.6629e-05 s, 6.7 MB/s
-dd if=kernel/kernel of=xv6.img seek=1 conv=notrunc
-253+1 records in
-253+1 records out
-129736 bytes (130 kB) copied, 0.000259671 s, 500 MB/s
+make: Nothing to be done for `all'.
 
 
 test build PASSED
@@ -88,7 +70,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-
+$ 
 
 test create PASSED (10 of 10)
  (Creates a small file and makes sure the type is properly set.)
@@ -149,7 +131,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-$ 
+
 
 test create2 PASSED (10 of 10)
  (Should not create a small file if O_SMALLFILE is passed in but not O_CREATE.)
@@ -399,6 +381,7 @@ tester
 bytes written = 52
 bytes read = 52
 TEST PASSED
+$ 
 
 test write PASSED (10 of 10)
  (Tries to write more than possible to a small file and makes sure only 52 bytes are written.)
@@ -458,13 +441,11 @@ cpu0: starting
 init: starting sh
 $ tester
 tester
-Data mismatch.
-TEST FAILED
+TEST PASSED
+$ 
 
-
-test write2 FAILED (0 of 10)
+test write2 PASSED (10 of 10)
  (Repeatedly opens, writes, closes a small file. The last write should be the one that is persisted.)
- tester failed
 
 starting write3
 
@@ -586,7 +567,7 @@ $ tester
 tester
 Data mismatch.
 TEST FAILED
-$ 
+
 
 test write4 FAILED (0 of 10)
  (Small write followed by a big write to a small file should truncate the big write upto max small file size.)
@@ -648,7 +629,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-$ 
+
 
 test readonly PASSED (10 of 10)
  (Makes sure small files can be opened as read only and writes would fail.)
@@ -770,7 +751,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-
+$ 
 
 test remove PASSED (10 of 10)
  (Makes sure removing a small file does not corrupt the file system by freeing blocks.)
@@ -835,12 +816,12 @@ creating large file: 1
 creating large file: 2
 creating large file: 3
 all free blocks are used
-bytes written = 25
-TEST PASSED
+cpu0: panic: dirlink
+ 102356 10565d 1056f6 104de3 105fcd 105dc1 0 0 0 0
 
-
-test fulldisk PASSED (10 of 10)
+test fulldisk FAILED (0 of 10)
  (First uses all free blocks on disk for normal files and then makes sure small files can still be created. ***Note that the test will take a while since big files are created.***)
+ xv6 kernel panic
 
 starting stress
 
@@ -1898,7 +1879,7 @@ iteration 997
 iteration 998
 iteration 999
 TEST PASSED
-$ 
+
 
 test stress PASSED (10 of 10)
  (Creates and deletes a lot of small files one at a time to make sure nothing breaks under a heavy load.)
@@ -2003,12 +1984,66 @@ iteration 41
 iteration 42
 iteration 43
 iteration 44
-cpu0: panic: dirlink
- 102484 105789 105822 104f0f 1060f9 105eed 0 0 0 0
+iteration 45
+iteration 46
+iteration 47
+iteration 48
+iteration 49
+iteration 50
+iteration 51
+iteration 52
+iteration 53
+iteration 54
+iteration 55
+iteration 56
+iteration 57
+iteration 58
+iteration 59
+iteration 60
+iteration 61
+iteration 62
+iteration 63
+iteration 64
+iteration 65
+iteration 66
+iteration 67
+iteration 68
+iteration 69
+iteration 70
+iteration 71
+iteration 72
+iteration 73
+iteration 74
+iteration 75
+iteration 76
+iteration 77
+iteration 78
+iteration 79
+iteration 80
+iteration 81
+iteration 82
+iteration 83
+iteration 84
+iteration 85
+iteration 86
+iteration 87
+iteration 88
+iteration 89
+iteration 90
+iteration 91
+iteration 92
+iteration 93
+iteration 94
+iteration 95
+iteration 96
+iteration 97
+iteration 98
+iteration 99
+TEST PASSED
+$ 
 
-test stress2 FAILED (0 of 10)
+test stress2 PASSED (10 of 10)
  (Creates and deletes a lot of small files 100 of them at a time to make sure nothing breaks under a heavy load. ***Note that the test will take a VERY long time since a lot of files are created.***)
- xv6 kernel panic
 
 starting smallbig
 
@@ -2066,7 +2101,7 @@ init: starting sh
 $ tester
 tester
 TEST PASSED
-
+$ 
 
 test smallbig PASSED (10 of 10)
  (Creates bunch of small files; then creates bunch of big files to make sure normal files are not affected.)
@@ -2318,7 +2353,7 @@ deleting and recreating file at inode 173
 deleting and recreating file at inode 182
 deleting and recreating file at inode 191
 TEST PASSED
-
+$ 
 
 test inode PASSED (10 of 10)
  (Uses all inodes in the file system; then repeatedly deleted and creates a file and makes sure the correct inode is reused for the new file.)
@@ -2606,7 +2641,7 @@ recreating file at inode 173
 recreating file at inode 182
 recreating file at inode 191
 TEST PASSED
-$
+$ 
 
 test inode2 PASSED (10 of 10)
  (Uses all inodes in the file system; then repeatedly deletes bunch of files and then creates that many files and makes sure the correct inodes are reused for the new files.)
@@ -2710,12 +2745,23 @@ exitwait: ok
 rmdot test: ok
 fourteen test: ok
 bigfile test: ok
-subdir test: unlink dd/dd failed
-$ 
+subdir test: ok
+concreate test: ok
+linktest: ok
+unlinkread test: ok
+createdelete test: ok
+twofiles test: ok
+sharedfd: ok
+dir vs file: ok
+empty file name: ok
+fork test: ok
+bigdir test: ok
+exec test
+TEST PASSED
 
-test usertests FAILED (0 of 10)
+
+test usertests PASSED (10 of 10)
  (Running standard tests to make sure you did not break anything for normal files. ***Note that the test will take a while since a lot of things are being tested.***)
- tester failed
 
 **********************************************************************
 Summary:
@@ -2741,9 +2787,8 @@ test read2 FAILED (0 of 10)
 test write PASSED (10 of 10)
  (Tries to write more than possible to a small file and makes sure only 52 bytes are written.)
 
-test write2 FAILED (0 of 10)
+test write2 PASSED (10 of 10)
  (Repeatedly opens, writes, closes a small file. The last write should be the one that is persisted.)
- tester failed
 
 test write3 FAILED (0 of 10)
  (Repeatedly opens, writes to the end, closes a small file until file is full.)
@@ -2762,15 +2807,15 @@ test writeonly PASSED (10 of 10)
 test remove PASSED (10 of 10)
  (Makes sure removing a small file does not corrupt the file system by freeing blocks.)
 
-test fulldisk PASSED (10 of 10)
+test fulldisk FAILED (0 of 10)
  (First uses all free blocks on disk for normal files and then makes sure small files can still be created. ***Note that the test will take a while since big files are created.***)
+ xv6 kernel panic
 
 test stress PASSED (10 of 10)
  (Creates and deletes a lot of small files one at a time to make sure nothing breaks under a heavy load.)
 
-test stress2 FAILED (0 of 10)
+test stress2 PASSED (10 of 10)
  (Creates and deletes a lot of small files 100 of them at a time to make sure nothing breaks under a heavy load. ***Note that the test will take a VERY long time since a lot of files are created.***)
- xv6 kernel panic
 
 test smallbig PASSED (10 of 10)
  (Creates bunch of small files; then creates bunch of big files to make sure normal files are not affected.)
@@ -2781,10 +2826,9 @@ test inode PASSED (10 of 10)
 test inode2 PASSED (10 of 10)
  (Uses all inodes in the file system; then repeatedly deletes bunch of files and then creates that many files and makes sure the correct inodes are reused for the new files.)
 
-test usertests FAILED (0 of 10)
+test usertests PASSED (10 of 10)
  (Running standard tests to make sure you did not break anything for normal files. ***Note that the test will take a while since a lot of things are being tested.***)
- tester failed
 
-Passed 14 of 20 tests.
-Overall 14 of 20
-Points 130 of 190
+Passed 16 of 20 tests.
+Overall 16 of 20
+Points 150 of 190
